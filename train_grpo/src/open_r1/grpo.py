@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-import os
 import sys
 from dataclasses import dataclass, field
 
@@ -28,9 +27,6 @@ from src.open_r1.configs import GRPOConfig
 from src.open_r1.rewards import accuracy_reward, format_reward, get_cosine_scaled_reward, reasoning_steps_reward
 from src.open_r1.utils.callbacks import get_callbacks
 from trl import GRPOTrainer, ModelConfig, ScriptArguments, TrlParser, get_peft_config
-
-import wandb
-#os.environ["WANDB_API_KEY"] = 'KEY'
 import os
 os.environ["WANDB_MODE"] = 'disabled'
 
@@ -86,12 +82,12 @@ class GRPOScriptArguments(ScriptArguments):
     )
 
 
-SYSTEM_PROMPT = (
-    "A conversation between User and Assistant. The user asks a question, and the Assistant solves it. The assistant "
-    "first thinks about the reasoning process in the mind and then provides the user with the answer. The reasoning "
-    "process and answer are enclosed within <think> </think> and <answer> </answer> tags, respectively, i.e., "
-    "<think> reasoning process here </think><answer> answer here </answer>"
-)
+# SYSTEM_PROMPT = (
+#     "A conversation between User and Assistant. The user asks a question, and the Assistant solves it. The assistant "
+#     "first thinks about the reasoning process in the mind and then provides the user with the answer. The reasoning "
+#     "process and answer are enclosed within <think> </think> and <answer> </answer> tags, respectively, i.e., "
+#     "<think> reasoning process here </think><answer> answer here </answer>"
+# )
 
 
 def main(script_args, training_args, model_args):
@@ -129,8 +125,8 @@ def main(script_args, training_args, model_args):
     if last_checkpoint is not None and training_args.resume_from_checkpoint is None:
         logger.info(f"Checkpoint detected, resuming training at {last_checkpoint=}.")
 
-    # Load the dataset
-    dataset = load_dataset(script_args.dataset_name, name=script_args.dataset_config)
+    # Load the dataset script_args.dataset_name
+    dataset = load_dataset('json', data_files=script_args.dataset_name)
 
     # Get reward functions
     REWARD_FUNCS_REGISTRY = {
@@ -152,10 +148,10 @@ def main(script_args, training_args, model_args):
         #print(example)
         return {
             "prompt": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": example["question"]},
+                {"role": "system", "content": example["Instruct"]},
+                {"role": "user", "content": example["Input"]},
             ],
-            'solution': example['answer'],
+            'solution': example['Output'],
         }
 
     dataset = dataset.map(make_conversation)

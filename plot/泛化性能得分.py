@@ -70,5 +70,5 @@ fig.legend(handles, labels, loc='upper center',  bbox_to_anchor=(0.50, 0.83),
            ncol=3, fontsize=13, frameon=False)
 
 plt.tight_layout(rect=[0, 0, 1, 0.9])
-fig.savefig('tu1.svg', transparent=True)
+fig.savefig('tu1.png', transparent=True)
 plt.show()

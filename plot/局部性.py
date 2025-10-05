@@ -16,7 +16,7 @@ methods = [
 ]
 
 x = np.arange(len(methods))
-actor_acc = [0.69, 18.49, 23.69, 20.28, 32.55, 98.82]
+actor_acc = [15.34, 18.49, 23.69, 20.28, 32.55, 73.13]
 bar_width = 0.35
 
 hatches = ['///', 'xx', '++', '///', 'xx', '++']
@@ -32,9 +32,9 @@ for i in range(len(x)):
            hatch=hatches[i], linewidth=2)
 
 ax.set_title('(III) Test of locality ability (ZsRE)', fontsize=16, fontweight='bold')
-ax.set_ylabel('Locality ability',fontsize=14, weight='bold')
+ax.set_ylabel('Locality ability (%)',fontsize=14, weight='bold')
 # plt.tick_params(labelsize=14)
-ax.set_ylim(0, 100)
+ax.set_ylim(0, 80)
 ax.set_xticks(x)
 ax.set_xticklabels([])
 
@@ -56,10 +56,11 @@ alpha_index = 3
 handles = [plt.Rectangle((0, 0), 1, 1, facecolor='none',
                          edgecolor=colors[i], hatch=hatches[i], linewidth=2)
            for i in range(6)]
+
 labels = methods
 fig.legend(handles, labels, loc='upper center',  bbox_to_anchor=(0.5, 0.83),
            ncol=3, fontsize=13, frameon=False)
 
 plt.tight_layout(rect=[0, 0, 1, 0.9])
-fig.savefig('xovee.svg', transparent=True)
+fig.savefig('xovee.png', transparent=True)
 plt.show()

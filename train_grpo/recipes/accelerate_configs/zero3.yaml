@@ -2,8 +2,8 @@ compute_environment: LOCAL_MACHINE
 debug: false
 deepspeed_config:
   deepspeed_multinode_launcher: standard
-  offload_optimizer_device: cpu
-  offload_param_device: cpu
+  offload_optimizer_device: none
+  offload_param_device: none
   zero3_init_flag: true
   zero3_save_16bit_model: true
   zero_stage: 3
@@ -19,4 +19,4 @@ same_network: true
 tpu_env: []
 tpu_use_cluster: false
 tpu_use_sudo: false
-use_cpu: true
+use_cpu: false

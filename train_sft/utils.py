@@ -16,7 +16,6 @@ def read_hotpotqa_data(data_path):
         ])
     return new_data
 
-# 读取指令数据集
 def read_sft_data(data_path):
     with open(data_path, "r", encoding="utf-8") as f:
         data = json.load(f)

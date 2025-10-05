@@ -1,5 +1,5 @@
-NUM=8
-project_path="/xxx/xxx/EditCoT"
+NUM=8 # adjust according to your GPU number > 3*40G (minimal demand)
+project_path="/xxx/xxx/CoT2Edit"
 model_path="/path/to/model"
 port_addr=11468
 
@@ -7,7 +7,7 @@ deepspeed --master_port=$port_addr --num_gpus=${NUM} $project_path/train_sft/tra
     --report_to "tensorboard" \
     --data_path $project_path/data/train_data_sft.jsonl \
     --model_name_or_path $model_path \
-    --output_dir $project_path/train_editor/output/output_llama \
+    --output_dir $project_path/train_sft/output/output_llama \
     --model_max_length 1024 \
     --num_train_epochs 6 \
     --per_device_train_batch_size 2 \
@@ -24,5 +24,5 @@ deepspeed --master_port=$port_addr --num_gpus=${NUM} $project_path/train_sft/tra
     --warmup_ratio 0.0 \
     --logging_steps 1 \
     --gradient_checkpointing True \
-    --deepspeed $project_path/train_editor/ds_config.json \
+    --deepspeed $project_path/train_sft/ds_config.json \
     --bf16 True \

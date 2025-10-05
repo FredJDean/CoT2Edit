@@ -68,13 +68,11 @@ def format_chat_messages(messages):
 
 
 def get_result(instruct, ques, model, llm_tokenizer):
-    # 获取聊天模板消息
     messages = get_chat_template(instruct, ques)
 
-    # 格式化消息为 prompt
     prompt = format_chat_messages(messages)
 
-    # 设置采样参数
+
     sampling_params = SamplingParams(
         temperature=0.0,
         top_p=1.0,
@@ -98,7 +96,6 @@ def get_result(instruct, ques, model, llm_tokenizer):
 
     print(output_)
 
-    # 提取 <think> 标签中的内容
     match = re.search(r'<think>(.*?)</think>', output_)
     try:
         thought = match.group(1)
@@ -113,3 +110,35 @@ def get_result(instruct, ques, model, llm_tokenizer):
         ans = None
 
     return {"input": ques, "thought": thought, "answer": ans}
+
+
+def get_result_loc(instruct, ques, model, llm_tokenizer):
+    messages = get_chat_template(instruct, ques)
+
+    prompt = format_chat_messages(messages)
+
+
+    sampling_params = SamplingParams(
+        temperature=0.0,
+        top_p=1.0,
+        max_tokens=256,
+        stop=["\n\nQuestion", ".\n\nQuestion", "<|im_end|>", "<|eot_id|>"]
+    )
+
+    # 使用模型生成输出
+    outputs = model.generate(prompt, sampling_params)
+
+    # 提取模型生成的文本
+    output_ = outputs[0].outputs[0].text.strip()
+
+    # 清除停止词尾部内容
+    if output_.endswith("\n\nQuestion"):
+        output_ = output_[:-len("\n\nQuestion")].strip()
+    if output_.endswith("<|im_end|>"):
+        output_ = output_[:-len("<|im_end|>")].strip()
+    if output_.endswith("<|eot_id|>"):
+        output_ = output_[:-len("<|eot_id|>")].strip()
+
+    print(output_)
+
+    return {"answer": output_}

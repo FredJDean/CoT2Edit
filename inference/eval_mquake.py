@@ -142,7 +142,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_name",
         type=str,
-        default="/gemini/space/fujinhu/pretrain-models/llama-3-8b-instruct"
+        default="/path/llama-3-8b-instruct"
     )
     parser.add_argument(
         "--data_path",
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--retriever_path",
         type=str,
-        default="/gemini/space/fujinhu/pretrain-models/facebook/contriever-msmarco"
+        default="/path/facebook/contriever-msmarco"
     )
     parser.add_argument(
         "--output_filename",

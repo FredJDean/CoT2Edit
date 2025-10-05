@@ -35,9 +35,6 @@ def eval_efficacy(model_edit, llmtokenizer, dataset):
 
         sim = jaccard_sim(ans, target_new)
 
-        # 如果新的回答与新编辑的事实一致
-        # 由于wiki这个数据集上下文描述中有很多关于事实描述的变体（甚至还有跨语言的）
-        # 因此不能一概而论
         if (
             (ans == target_new)
             or (target_new in ans)
@@ -80,9 +77,9 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_name", type=str, default="/gemini/space/fujinhu/pretrain-models/llama-3-8b-instruct")
+    parser.add_argument("--model_name", type=str, default="/path/llama-3-8b-instruct")
     parser.add_argument("--data_path", type=str, default="../data/wikiUpdate.json")
-    parser.add_argument("--editor_path", type=str, default="/gemini/space/fujinhu/MyEdit/train_grpo/log/grpo_llama")
+    parser.add_argument("--editor_path", type=str, default="/path/train_grpo/log/grpo_llama")
     parser.add_argument("--output_filename", type=str, default="./output/output_wiki_uns.json")
     parser.add_argument("--max_iter", type=int, default=4)
     parser.add_argument("--tensor_parallel_size", type=int, default=8)

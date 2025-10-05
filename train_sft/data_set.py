@@ -4,7 +4,6 @@ from typing import Dict
 from utils import read_sft_data as read_sft
 from utils import llama_instruct_preprocess as data_preprocess
 
-# 将数据路径以超参数的形式传入
 class SupervisedDataset(Dataset):
     """Dataset for supervised fine-tuning."""
 

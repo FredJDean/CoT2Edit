@@ -1,11 +1,9 @@
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 # others 4 7 16
-accelerate launch \
-  --config_file recipes/accelerate_configs/zero3.yaml \
+accelerate launch --config_file recipes/accelerate_configs/zero3.yaml --num_processes=8 src/open_r1/grpo.py \
   --output_dir ./log/grpo_Falcon3 \
-  --num_processes 8 \
-  --model_name_or_path /gemini/space/fujinhu/pretrain-models/Qwen3-14B \
-  --dataset_name /gemini/space/fujinhu/MyEdit/data/train_data_grpo.jsonl \
+  --model_name_or_path /your_model_path/Qwen3-14B \
+  --dataset_name /your_data_path/train_data_grpo.jsonl \
   --max_prompt_length 512 \
   --max_completion_length 1024 \
   --per_device_train_batch_size 2 \

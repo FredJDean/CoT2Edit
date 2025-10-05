@@ -19,10 +19,10 @@ def visualize(log_path):
             completion_length_list.append(i["completion_length"])
     
     # 创建一个3x2的网格
-    plt.figure(figsize=(10, 8))  # 设置画布大小
+    plt.figure(figsize=(10, 8))
     
     # 添加第一个子图
-    plt.subplot(2, 2, 1)  # (行数, 列数, 索引)
+    plt.subplot(2, 2, 1)
     plt.plot(step_list, accuracy_reward_list)
     plt.title('accuracy_reward')
     
@@ -41,7 +41,7 @@ def visualize(log_path):
     plt.plot(step_list, completion_length_list)
     plt.title('completion_length')
     
-    plt.tight_layout()  # 自动调整子图参数，使之填充整个图像区域
+    plt.tight_layout()
     plt.show()
     plt.savefig("temp/figure.png")
 

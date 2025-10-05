@@ -1,5 +1,5 @@
 import os
-# 八卡训练
+# according to the ID of GPUs
 os.environ["CUDA_VISIBLE_DEVICES"] = '0,1,2,3,4,5,6,7'
 
 

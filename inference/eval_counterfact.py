@@ -121,7 +121,7 @@ def eval_nei(model_edit, llm_tokenizer, dataset, fact_embs, fact_docs, new_facts
 
             # 获取模型生成结果
             res = get_result(instruct, ques=ques, model=model_edit, llm_tokenizer=llm_tokenizer)
-            ans = res["answer"] + ". "
+            ans = res["answer"]
 
             if ans == target_new:
                 correct += 1
@@ -169,10 +169,6 @@ def main(args):
     # 收集所有用于构建向量的事实文本
     all_facts = list(set(new_facts.keys()))
 
-    # for k in new_facts:
-    #     all_facts.append(k)
-    # all_facts = list(all_facts)
-
     # 生成向量表示
     embs = get_sent_embeddings(all_facts, contriever, retriever_tokenizer)
 
@@ -197,7 +193,7 @@ def parse_args():
     parser.add_argument(
         "--model_name",
         type=str,
-        default="/gemini/space/fujinhu/pretrain-models/llama-3-8b-instruct",
+        default="/Your_model_path/llama-3-8b-instruct",
         help="Path to the pretrained language model"
     )
     parser.add_argument(
@@ -215,7 +211,7 @@ def parse_args():
     parser.add_argument(
         "--retriever_path",
         type=str,
-        default="/gemini/space/fujinhu/pretrain-models/facebook/contriever-msmarco",
+        default="/path/facebook/contriever-msmarco",
         help="Path to the dense retriever model (e.g. Contriever)"
     )
     parser.add_argument(

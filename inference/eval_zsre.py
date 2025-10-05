@@ -1,11 +1,13 @@
 from tqdm import tqdm
-from edit_cot import retrieve_facts, get_result, get_sent_embeddings
+from edit_cot import retrieve_facts, get_result, get_sent_embeddings, get_result_loc
 from transformers import AutoTokenizer
 from transformers import StoppingCriteria, AutoModel
 from vllm import LLM
 import json
 import argparse
 import multiprocessing
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = '0,1,2,3,4,5,6,7'
 
 instruct = "Your task is to break down the question into steps and extract the chain of thought based on the **editing facts** into <think></think> tags, and finally get the corresponding answer and put it in <answer></answer>. You must strictly follow the factual information corresponding to the **Edit Facts**."
 
@@ -58,8 +60,6 @@ def eval_rephrase(model_edit, llmtokenizer, dataset, fact_embs, fact_docs, new_f
     acc = cor / tot
     return acc
 
-instruct_loc = "Your task is to break down the question into steps and extract the chain of thought based on the **editing facts** into <think></think> tags, and finally get the corresponding answer and put it in <answer></answer>."
-
 def eval_locaility(model_edit, llmtokenizer, dataset):
     result = []
     tot = 0
@@ -67,19 +67,20 @@ def eval_locaility(model_edit, llmtokenizer, dataset):
 
     for d in tqdm(dataset):
         tot += 1
-        q = d['src']
-        target_new = d['answers'][0]
 
-        edit_fact = q + target_new
         question = d["loc"] + "?"
-        ques = "Edit Fact:" + edit_fact + "\n" + "Question:" + question  # 上下文知识注入
 
-        # get_result 应该是处理带上下文注入的 LLM 推理函数
-        res = get_result(instruct_loc, ques, model_edit, llmtokenizer)
+        ground = d['loc_ans']
+
+        ques = "Question:" + question
+
+        res = get_result_loc("", ques, model_edit, llmtokenizer)
         ans = res["answer"]
 
-        # 不被 edit 上下文影响
-        if ans != target_new:
+        if ans is None:
+            continue
+
+        if ground in ans:
             cor += 1
 
         print(f'acc={cor / tot}({cor}/{tot})')
@@ -92,9 +93,10 @@ def main(args):
     model_name = args.model_name
     editor_path = args.editor_path
 
-    # 分词器
     llmtokenizer = AutoTokenizer.from_pretrained(model_name)
 
+    # assign GPUs
+    os.environ["CUDA_VISIBLE_DEVICES"] = '0,1,2,3'
     model_edit = LLM(
         model=editor_path,
         tokenizer=model_name,
@@ -104,14 +106,23 @@ def main(args):
         enable_prefix_caching=True,
     )
 
-    # 加载数据集
+    os.environ["CUDA_VISIBLE_DEVICES"] = '4,5,6,7'
+    base_model = LLM(
+        model=model_name,
+        tokenizer=model_name,
+        tensor_parallel_size=4,  # adjust based on your GPU setup
+        dtype="float16",
+        gpu_memory_utilization=0.9,
+        enable_prefix_caching=True,
+    )
+
+
+    # load datasets
     dataset = json.load(open(args.data_path, "r"))
 
-    # 加载检索器
     contriever = AutoModel.from_pretrained(args.retriever_path).cuda()
     tokenizer = AutoTokenizer.from_pretrained(args.retriever_path)
 
-    # 构建新事实映射
     new_facts = {}
     for d in dataset:
         question = d['src']
@@ -121,7 +132,7 @@ def main(args):
         new_fact = question + target_new
         new_facts[old_fact] = new_fact
 
-    # 提取所有事实句子并嵌入
+
     all_facts = set()
     for k in new_facts:
         all_facts.add(k)
@@ -129,12 +140,16 @@ def main(args):
 
     embs = get_sent_embeddings(all_facts, contriever, tokenizer)
 
-    # 执行评估
+
     efficacy = eval_efficacy(model_edit, llmtokenizer, dataset, embs, all_facts, new_facts, contriever, tokenizer)
     paraphrase = eval_rephrase(model_edit, llmtokenizer, dataset, embs, all_facts, new_facts, contriever, tokenizer)
-    loc = eval_locaility(model_edit, llmtokenizer, dataset)
 
-    # 保存结果
+    loc_base = eval_locaility(base_model, llmtokenizer, dataset)
+    loc_editor = eval_locaility(model_edit, llmtokenizer, dataset)
+
+    # general ability changing ratio
+    loc = loc_editor/loc_base
+
     result = {
         "model": model_name,
         "efficacy": efficacy,
@@ -152,7 +167,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_name",
         type=str,
-        default="/gemini/space/fujinhu/pretrain-models/falcon3-10B-Instruct"
+        default="/path/falcon3-10B-Instruct"
     )
     parser.add_argument(
         "--data_path",
@@ -168,7 +183,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--retriever_path",
         type=str,
-        default="/gemini/space/fujinhu/pretrain-models/facebook/contriever-msmarco"
+        default="/path/facebook/contriever-msmarco"
     )
     parser.add_argument(
         "--output_filename",
