@@ -37,7 +37,7 @@ for item in data:
         answer = target_new
         new_json.append({'question': questions, 'edit_context': edit_context, "answer": answer, "answers_list": []})
 
-client = OpenAI(api_key='sk-015bf0f46b4245f7aa3055174c00e344', base_url="https://api.deepseek.com/v1")
+client = OpenAI(api_key='', base_url="")
 
 # 获得chatgpt的回复
 def getResponse(prompt, max_retries=10):
