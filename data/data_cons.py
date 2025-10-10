@@ -4,9 +4,8 @@ import time
 from tqdm import tqdm
 import re
 
-BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-# API_KEY="sk-hSnPRYMZglaGobCvu1zEVrp3IdiHjw4e8IIurHuzQNMVRE4R"
-API_KEY = 'sk-4ecdf657ff28487382351bfb952d70ca'
+BASE_URL = "your_url"
+API_KEY = 'your_key'
 
 # 生成数据的提示
 prompt_construct = '''Your task is to break down the question into steps and extract the chain of thought based on the **editing facts** into <think></think> tags, and finally get the corresponding answer and put it in <answer></answer>. You must strictly follow the factual information corresponding to the **Edit Facts**, a few examples of which are provided below:\n
@@ -51,7 +50,6 @@ for item in data[0:2000]:
 client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
 
-# 获得chatgpt的回复
 def getResponse(prompt, max_retries=10):
     retries = 0
     while retries < max_retries:
