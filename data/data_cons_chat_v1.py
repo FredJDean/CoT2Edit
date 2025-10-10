@@ -2,14 +2,12 @@ import openai
 import json
 
 # chatgpt合成数据
-from numpy.f2py.auxfuncs import throw_error
 from tqdm import tqdm
 import time
 import re
 import random
 # 创建 OpenAI 客户端对象
-client = openai.OpenAI(api_key="sk-015bf0f46b4245f7aa3055174c00e344", base_url="https://api.deepseek.com/v1")  # 或设置环境变量 OPENAI_API_KEY
-# client = openai.OpenAI(api_key="sk-4ecdf657ff28487382351bfb952d70ca", base_url="https://dashscope.aliyuncs.com/compatible-mode/v1")
+client = openai.OpenAI(api_key="", base_url="")  # 或设置环境变量 OPENAI_API_KEY
 # 全局 Instruct 模板
 INSTRUCT_TEXT = (
     "Your task is to break down the question into steps and extract the chain of thought based on the **editing facts** "
@@ -88,14 +86,13 @@ def generate_data(examples, num_to_generate=200):
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant generating diverse and high-quality instruction-following data.\n"
                                                       "1. Don't repeat facts or entities from the examples, it just a reference of format.\n"
-                                                      "2. The generated Edit Fact can be counterfactual information.\n"
-                                                      "3. The generated Question must require multiple steps of reasoning to solve based on the edit fact. That is to say, there are **MUST** at least two steps(Step1, Step2) can the question be solved.\n"
-                                                      "4. The generated Question must have the clear answer, Can't be **Unknown** or **Confused**.\n"
-                                                      "5. Can't have any extraneous strings other than json.\n"
-                                                      "6. The format of the example data must be strictly followed.\n"
-                                                      f"7. Be sure to generate content about entity {entities[i]}.\n"
-                                                      "8. The keys in json format must **ONLY** be Input, Output\n"
-                                                      "9. Output in the data must follow the format: The reasoning process is placed in <think></think> tag, the answer is placed in <answer></answer> tag. No other characters are allowed.\n"},
+                                                      "2. The generated Question must require multiple steps of reasoning to solve based on the edit fact. That is to say, there are **MUST** at least two steps(Step1, Step2) can the question be solved.\n"
+                                                      "3. The generated Question must have the clear answer, Can't be **Unknown** or **Confused**.\n"
+                                                      "4. Can't have any extraneous strings other than json.\n"
+                                                      "5. The format of the example data must be strictly followed.\n"
+                                                      f"6. Be sure to generate content about entity {entities[i]}.\n"
+                                                      "7. The keys in json format must **ONLY** be Input, Output\n"
+                                                      "8. Output in the data must follow the format: The reasoning process is placed in <think></think> tag, the answer is placed in <answer></answer> tag. No other characters are allowed.\n"},
                         {"role": "user", "content": f"""Based on the following examples, generate one new sample with the same structure:\n\n{example_prompt}"""}
                     ],
                     temperature=0.8,
