@@ -2,14 +2,12 @@ import openai
 import json
 
 # chatgpt合成数据
-from numpy.f2py.auxfuncs import throw_error
 from tqdm import tqdm
 import time
 import re
 import random
-# 创建 OpenAI 客户端对象
-# client = openai.OpenAI(api_key="sk-015bf0f46b4245f7aa3055174c00e344", base_url="https://api.deepseek.com/v1")  # 或设置环境变量 OPENAI_API_KEY
-client = openai.OpenAI(api_key="sk-4ecdf657ff28487382351bfb952d70ca", base_url="https://dashscope.aliyuncs.com/compatible-mode/v1")
+
+client = openai.OpenAI(api_key="", base_url="")
 # 全局 Instruct 模板
 INSTRUCT_TEXT = (
     "Your task is to firstly extract the edit fact from the **Edit Context** and secondly answer the corresponding "
@@ -79,8 +77,7 @@ def extract_input_output(text):
 
 # 使用 GPT 生成数据
 def generate_data(examples, num_to_generate=200):
-    # results = []
-    with open('generated_1000_with_instruct.jsonl', 'a', encoding='utf-8') as f:
+    with open('generated_uns_with_instruct.jsonl', 'a', encoding='utf-8') as f:
         for i in tqdm(range(num_to_generate)):
             example_prompt = sample_diverse_examples(examples, 5)
             try:
